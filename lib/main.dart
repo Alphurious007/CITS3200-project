@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Text('Accelerometer: $accelerometer\n'),
           Text('time: $now\n'),
           Text('longutude: $long\n'),
-          Text('latitude: $lat\n')
+          Text('latitude: $lat\n'),
         ],
       ),
     );
