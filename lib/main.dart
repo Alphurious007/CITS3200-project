@@ -36,14 +36,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late Position position; //future for positions
   var long = "", lat = ""; //long and lat stored as strings
+  var toggle = 0; //toggle 0:on 1:off
 
   List<double>? _accelerometerValues;
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
+
+  void _setToggle(var value) {
+    setState(() {
+      toggle = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final accelerometer =
         _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+    final ButtonStyle style =
+        ElevatedButton.styleFrom(
+          textStyle: const TextStyle(fontSize: 20)
+        );
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -55,6 +67,20 @@ class _MyHomePageState extends State<MyHomePage> {
           Text('time: $now\n'),
           Text('longutude: $long\n'),
           Text('latitude: $lat\n'),
+          ElevatedButton(
+            style: style,
+            onPressed: () {
+              _setToggle(1);
+            },
+            child: const Text('First Button'),
+          ),
+          ElevatedButton(
+            style: style,
+            onPressed: () {
+              _setToggle(0);
+            },
+            child: const Text('Second Button'),
+          ),
         ],
       ),
     );
