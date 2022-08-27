@@ -6,6 +6,14 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:geolocator/geolocator.dart';
 import 'file_io.dart';
 
+//Threading constants
+final gps_delay = Duration(seconds: 3);
+final accel_delay = Duration(seconds: 3);
+final toStage_delay = Duration(seconds: 30);
+final toUpload_delay = Duration(seconds: 30);
+final upload_delay = Duration(seconds: 60);
+
+
 void main() {
   runApp(const MyApp());
 }
@@ -94,6 +102,33 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //Threading
+  //GPS Thread
+  Future<void> gpsThread() async {
+    //add gps retrieval and save to file here
+  }
+
+  //Accelerometer Thread
+  Future<void> accelThread() async {
+    //add accelerometer retrieval and save to file here
+  }
+
+  //Moving file from writing to staging
+  Future<void> toStageThread() async {
+    //add writing to staging code here
+  }
+
+  //Moving file from staging to upload
+  Future<void> toUploadThread() async {
+    //add staging to upload code here
+  }
+
+  //upload file to database
+  Future<void> uploadThread() async {
+    //add upload code here
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -110,6 +145,30 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     //GPS stream
     getLocation();
+    
+    //Thread timer
+    Timer.periodic(gps_delay, (Timer gpsTimer) {
+      gpsThread();
+    });
+
+    Timer.periodic(accel_delay, (Timer accelTimer) {
+      accelThread();
+    });
+
+    Timer.periodic(toStage_delay, (Timer toStageTimer) {
+      toStageThread();
+    });
+
+    Timer.periodic(toUpload_delay, (Timer toUploadTimer) {
+      toUploadThread();
+    });
+
+    Timer.periodic(upload_delay, (Timer uploadTimer) {
+      uploadThread();
+    });
+
+  }
+
   }
 
   getLocation() async {
