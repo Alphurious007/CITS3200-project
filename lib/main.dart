@@ -13,7 +13,6 @@ final toStage_delay = Duration(seconds: 30);
 final toUpload_delay = Duration(seconds: 30);
 final upload_delay = Duration(seconds: 60);
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -60,10 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final accelerometer =
         _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
     final ButtonStyle style =
-        ElevatedButton.styleFrom(
-          textStyle: const TextStyle(fontSize: 20)
-        );
-    
+        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
 
     return Scaffold(
       appBar: AppBar(
@@ -128,7 +124,6 @@ class _MyHomePageState extends State<MyHomePage> {
     //add upload code here
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -145,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     //GPS stream
     getLocation();
-    
+
     //Thread timer
     Timer.periodic(gps_delay, (Timer gpsTimer) {
       gpsThread();
@@ -166,9 +161,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Timer.periodic(upload_delay, (Timer uploadTimer) {
       uploadThread();
     });
-
-  }
-
   }
 
   getLocation() async {
