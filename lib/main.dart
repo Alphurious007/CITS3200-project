@@ -1,10 +1,14 @@
 //------------------------------------------------------------------------------------
+library file_io;
 
+import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:geolocator/geolocator.dart';
-import 'file_io.dart';
+import 'File_io.dart';
+import 'package:path_provider/path_provider.dart';
+import 'getSensors.dart';
 
 //Threading constants
 final gps_delay = Duration(seconds: 3);
@@ -42,8 +46,11 @@ class _MyHomePageState extends State<MyHomePage> {
   String now = DateTime.now().toString().substring(0, 19); //the time
 
   late Position position; //future for positions
-  var long = "", lat = ""; //long and lat stored as strings
+  var long = "not connected", lat = "not connected"; //long and lat stored as strings
   var toggle = 0; //toggle 0:on 1:off
+
+  var current_filename = '';
+  var unique_id = '';
 
   List<double>? _accelerometerValues;
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
@@ -69,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           Text('Accelerometer: $accelerometer\n'),
           Text('time: $now\n'),
-          Text('longutude: $long\n'),
+          Text('longitude: $long\n'),
           Text('latitude: $lat\n'),
           ElevatedButton(
             style: style,
@@ -102,16 +109,56 @@ class _MyHomePageState extends State<MyHomePage> {
   //GPS Thread
   Future<void> gpsThread() async {
     //add gps retrieval and save to file here
+    if(unique_id == ''){
+      unique_id = await get_unique_id();
+    }
+
+    if(current_filename == ''){
+      current_filename = generate_file_name(await get_unique_id());
+    }
+    //print(long);
+    //print(lat);
+
   }
 
   //Accelerometer Thread
   Future<void> accelThread() async {
-    //add accelerometer retrieval and save to file here
+    if(unique_id == ''){
+      unique_id = await get_unique_id();
+    }
+    //print(unique_id);
+    if(current_filename == ''){
+      current_filename = generate_file_name(await get_unique_id());
+    }
+
+    final accelerometer =
+    _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+    write_file(accelerometer, 'accelerometer[X,Y,Z]', current_filename, 'writing', unique_id);
+    //write_file(accelerometer, 'accelerometer[X,Y,Z]', 'yeet.csv', 'writing', unique_id);
+    //move_file('yeet.csv', 'writing', 'yeet.csv', 'staging');
   }
 
   //Moving file from writing to staging
   Future<void> toStageThread() async {
-    //add writing to staging code here
+    String last_filename = current_filename;
+    current_filename = generate_file_name(await get_unique_id());
+    await Future.delayed(const Duration(seconds: 5));
+
+    final Directory? directory = await getExternalStorageDirectory();
+    Directory writingDir = Directory('${directory!.path}/writing');
+    List files = writingDir.listSync();
+    if(files.isEmpty){
+      print('No files to move to stage');
+    }
+    else{
+      writingDir.list(recursive: true, followLinks: false).listen((e) {
+        String name = e.path.split('/').last;
+        if (name != current_filename) {
+          move_file(name, 'writing', name, 'staging');
+          print('moved file ${name} to stagging');
+        }
+      });
+    }
   }
 
   //Moving file from staging to upload
